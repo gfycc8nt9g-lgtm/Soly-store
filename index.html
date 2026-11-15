@@ -1,9 +1,9 @@
-I'm<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>السولي ستور | Soly Store - عناية وبروتين الشعر</title>
+    <title>السولي ستور | Soly Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,100 +20,58 @@ I'm<!DOCTYPE html>
             <span class="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">عناية وبروتين الشعر</span>
         </div>
         <div>
-            <a href="admin.html" class="text-xs text-gray-400 hover:text-pink-600 transition">دخول الإدارة ⚙️</a>
+            <button onclick="openAdminPanel()" class="text-xs text-gray-400 hover:text-pink-600 transition bg-gray-50 border px-3 py-1.5 rounded-lg">دخول الإدارة ⚙️</button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-grow container mx-auto px-4 py-8">
+    <!-- ================= 1. قسم الزبائن (المتجر الأساسي) ================= -->
+    <main id="customerSection" class="flex-grow container mx-auto px-4 py-8">
         <div class="text-center mb-10">
             <h1 class="text-3xl font-bold text-pink-700 mb-2">أجود منتجات الرووتين والبروتين لشعر صحي ولامع</h1>
             <p class="text-gray-500">اختاري منتجاتك المفضلة وتمتعي بإطلالة ساحرة</p>
         </div>
-        <!-- شبكة المنتجات للزبائن -->
         <div id="customerProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- يتم تعبئتها ديناميكياً -->
+            <p class="col-span-full text-center text-gray-400">جاري تحميل المنتجات...</p>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-pink-100 py-4 text-center text-xs text-gray-400">
-        جميع الحقوق محفوظة © Soly Store 2026
-    </footer>
+    <!-- ================= 2. قسم لوحة التحكم (مخفي ولا يظهر إلا بالباسورد) ================= -->
+    <main id="adminSection" class="flex-grow container mx-auto px-4 py-8 hidden">
+        <div class="flex justify-between items-center mb-6 bg-pink-50 p-4 rounded-xl border border-pink-200">
+            <h2 class="text-xl font-bold text-pink-700">⚙️ لوحة تحكم الحسابات والمخزن</h2>
+            <button onclick="closeAdminPanel()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm transition">إغلاق الإدارة والعودة للمتجر 🛍️</button>
+        </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        <!-- إضافة منتج -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-pink-200 mb-8">
+            <h3 class="text-lg font-bold text-pink-600 mb-4">إضافة منتج جديد وحساب الأرباح 📊</h3>
+            <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-pink-50/50 p-4 rounded-xl border border-pink-100">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">اسم المنتج</label>
+                    <input type="text" id="prodName" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-pink-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">التكلفة (السعر الأصلي)</label>
+                    <input type="number" id="prodCost" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-pink-400 outline-none" placeholder="جنيه">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">سعر البيع للزبون</label>
+                    <input type="number" id="prodPrice" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-pink-400 outline-none" placeholder="جنيه">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">الكمية بالمخزن</label>
+                    <input type="number" id="prodStock" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-pink-400 outline-none" value="10">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">رابط صورة المنتج</label>
+                    <input type="url" id="prodImage" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-pink-400 outline-none" placeholder="https://...">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 rounded-lg transition shadow-sm">حفظ وإضافة للمخزن</button>
+                </div>
+            </form>
+        </div>
 
-        // استبدل الإعدادات ببيانات مشروعك في Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDAtgcGVa_yuy-IMA0ZjxLmWYtSslZ0wVo",
-            authDomain: "bmw-parts-b99e1.firebaseapp.com",
-            projectId: "bmw-parts-b99e1",
-            storageBucket: "bmw-parts-b99e1.firebasestorage.app",
-            messagingSenderId: "854628460870",
-            appId: "1:854628460870:web:79f24f6de98972fc441d47"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function loadCustomerProducts() {
-            const grid = document.getElementById('customerProductsGrid');
-            grid.innerHTML = "<p class='col-span-full text-center text-gray-400'>جاري تحميل المنتجات...</p>";
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "soly_products"));
-                grid.innerHTML = "";
-                
-                if(querySnapshot.empty) {
-                    grid.innerHTML = "<p class='col-span-full text-center text-gray-400'>لا توجد منتجات مضافة حالياً.</p>";
-                    return;
-                }
-
-                querySnapshot.forEach((docSnap) => {
-                    const p = docSnap.data();
-                    const id = docSnap.id;
-                    
-                    grid.innerHTML += `
-                        <div class="feminine-card p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
-                            <div>
-                                <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded-lg mb-3 border border-pink-50" onerror="this.src='https://via.placeholder.com/300?text=Soly+Store'">
-                                <h3 class="font-bold text-lg text-gray-800 mb-1">${p.name}</h3>
-                                <p class="text-pink-600 font-bold text-xl mb-3">${p.price} جنيه</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-400 mb-3">المتبقي بالمخزن: <span class="font-semibold text-gray-600">${p.stock}</span></p>
-                                <button onclick="buyProduct('${id}', ${p.stock})" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg text-sm font-semibold transition ${p.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${p.stock <= 0 ? 'disabled' : ''}>
-                                    ${p.stock > 0 ? 'اطلبي الآن 🛍️' : 'نفذت الكمية'}
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            } catch (err) {
-                console.error(err);
-                grid.innerHTML = "<p class='col-span-full text-center text-red-400'>حدث خطأ في تحميل المنتجات.</p>";
-            }
-        }
-
-        window.buyProduct = async function(id, currentStock) {
-            if(currentStock <= 0) {
-                alert("عذراً، هذا المنتج نفذ من المخزن!");
-                return;
-            }
-            if(confirm("هل متأكدة من إتمام طلب هذا المنتج؟ سيتم تحديث المخزن فوراً.")) {
-                const prodRef = doc(db, "soly_products", id);
-                await updateDoc(prodRef, {
-                    stock: increment(-1)
-                });
-                alert("تم تسجيل الطلب بنجاح وتحديث المخزن! 🎉");
-                loadCustomerProducts();
-            }
-        }
-
-        loadCustomerProducts();
-    </script>
-</body>
-</html>
+        <!-- جدول الحسابات والمكسب -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-pink-200">
+            <h3 class="text-lg font-bold text-gray-7
