@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>السولي ستور | Soly Store - روتين العناية بالشعر</title>
+    <title>السولي ستور | Soly Store - عناية وبروتين الشعر</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -13,27 +13,26 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Header خفيف وراقي للزباين فقط -->
+    <!-- Header / Navbar -->
     <header class="bg-white shadow-sm border-b border-pink-100 py-4 px-6 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <span class="text-2xl font-bold text-pink-600">✨ السولي ستور</span>
-            <span class="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">روتین وبروتين الشعر</span>
+            <span class="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">عناية وبروتين الشعر</span>
         </div>
         <div>
-            <span class="text-sm text-gray-500">لأجمل إطلالة شعر صحي</span>
+            <a href="admin.html" class="text-xs text-gray-400 hover:text-pink-600 transition">دخول الإدارة ⚙️</a>
         </div>
     </header>
 
     <!-- Main Container -->
     <main class="flex-grow container mx-auto px-4 py-8">
         <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-pink-700 mb-2">مجموعة العناية الفائقة لشعرك</h1>
-            <p class="text-gray-500">اخترنا لكِ أفضل منتجات الروتين والبروتين بأفضل الأسعار</p>
+            <h1 class="text-3xl font-bold text-pink-700 mb-2">أجود منتجات الرووتين والبروتين لشعر صحي ولامع</h1>
+            <p class="text-gray-500">اختاري منتجاتك المفضلة وتمتعي بإطلالة ساحرة</p>
         </div>
-
-        <!-- شبكة عرض المنتجات للعملاء -->
+        <!-- شبكة المنتجات للزبائن -->
         <div id="customerProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <p class="col-span-full text-center text-gray-400 py-10">جاري تحميل المنتجات...</p>
+            <!-- يتم تعبئتها ديناميكياً -->
         </div>
     </main>
 
@@ -42,12 +41,12 @@
         جميع الحقوق محفوظة © Soly Store 2026
     </footer>
 
-    <!-- Firebase SDK Scripts -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // نفس بيانات مشروع الـ Firebase بتاعك
+        // استبدل الإعدادات ببيانات مشروعك في Firebase
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -62,12 +61,14 @@
 
         async function loadCustomerProducts() {
             const grid = document.getElementById('customerProductsGrid');
+            grid.innerHTML = "<p class='col-span-full text-center text-gray-400'>جاري تحميل المنتجات...</p>";
+            
             try {
                 const querySnapshot = await getDocs(collection(db, "soly_products"));
                 grid.innerHTML = "";
                 
                 if(querySnapshot.empty) {
-                    grid.innerHTML = "<p class='col-span-full text-center text-gray-400 py-10'>لا توجد منتجات مضافة حالياً، ترقبونا قريباً! ✨</p>";
+                    grid.innerHTML = "<p class='col-span-full text-center text-gray-400'>لا توجد منتجات مضافة حالياً.</p>";
                     return;
                 }
 
@@ -78,12 +79,12 @@
                     grid.innerHTML += `
                         <div class="feminine-card p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
                             <div>
-                                <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded-lg mb-3 border border-pink-50">
+                                <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded-lg mb-3 border border-pink-50" onerror="this.src='https://via.placeholder.com/300?text=Soly+Store'">
                                 <h3 class="font-bold text-lg text-gray-800 mb-1">${p.name}</h3>
                                 <p class="text-pink-600 font-bold text-xl mb-3">${p.price} جنيه</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 mb-3">الحالة: <span class="font-semibold ${p.stock > 0 ? 'text-green-600' : 'text-red-500'}">${p.stock > 0 ? 'متوفر بالمخزن' : 'نفذت الكمية'}</span></p>
+                                <p class="text-xs text-gray-400 mb-3">المتبقي بالمخزن: <span class="font-semibold text-gray-600">${p.stock}</span></p>
                                 <button onclick="buyProduct('${id}', ${p.stock})" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg text-sm font-semibold transition ${p.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${p.stock <= 0 ? 'disabled' : ''}>
                                     ${p.stock > 0 ? 'اطلبي الآن 🛍️' : 'نفذت الكمية'}
                                 </button>
@@ -92,19 +93,22 @@
                     `;
                 });
             } catch (err) {
+                console.error(err);
                 grid.innerHTML = "<p class='col-span-full text-center text-red-400'>حدث خطأ في تحميل المنتجات.</p>";
             }
         }
 
-        // تسجيل الطلب وخصم الكمية من المخزن تلقائياً
         window.buyProduct = async function(id, currentStock) {
-            if(currentStock <= 0) return;
-            if(confirm("هل متأكدة من إتمام طلب هذا المنتج؟")) {
+            if(currentStock <= 0) {
+                alert("عذراً، هذا المنتج نفذ من المخزن!");
+                return;
+            }
+            if(confirm("هل متأكدة من إتمام طلب هذا المنتج؟ سيتم تحديث المخزن فوراً.")) {
                 const prodRef = doc(db, "soly_products", id);
                 await updateDoc(prodRef, {
                     stock: increment(-1)
                 });
-                alert("تم تسجيل طلبك بنجاح! سنتواصل معكِ لتأكيد الشحن. 🎉");
+                alert("تم تسجيل الطلب بنجاح وتحديث المخزن! 🎉");
                 loadCustomerProducts();
             }
         }
@@ -113,94 +117,3 @@
     </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم السولي ستور | إدارة المخزن والحسابات</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f4f6f8; color: #1f2937; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Header خاص بالأدمن -->
-    <header class="bg-gray-900 text-white shadow-md py-4 px-6 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <span class="text-xl font-bold">⚙️ لوحة تحكم وحسابات السولي ستور</span>
-        </div>
-        <div>
-            <span class="text-xs bg-gray-800 px-3 py-1 rounded-full text-gray-300">خاص بالإدارة فقط</span>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="flex-grow container mx-auto px-4 py-8">
-
-        <!-- نموذج إضافة منتج جديد -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-8">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">إضافة منتج جديد للمخزن والحسابات 📦</h2>
-            
-            <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">اسم المنتج</label>
-                    <input type="text" id="prodName" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-gray-400 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">السعر الأصلي (التكلفة)</label>
-                    <input type="number" id="prodCost" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-gray-400 outline-none" placeholder="جنيه">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">سعر البيع للزبون</label>
-                    <input type="number" id="prodPrice" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-gray-400 outline-none" placeholder="جنيه">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">الكمية الأولية بالمخزن</label>
-                    <input type="number" id="prodStock" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-gray-400 outline-none" value="10">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">رابط صورة المنتج</label>
-                    <input type="url" id="prodImage" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-gray-400 outline-none" placeholder="https://...">
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition shadow-sm">حفظ وإضافة للمخزن</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- جدول جرد المخزن وحسابات الأرباح -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">جرد المخزن وحسابات المكسب التلقائي 📊</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-700 text-sm">
-                            <th class="p-3 border-b">المنتج</th>
-                            <th class="p-3 border-b">التكلفة (الأصلي)</th>
-                            <th class="p-3 border-b">سعر البيع</th>
-                            <th class="p-3 border-b">المكسب للقطعة</th>
-                            <th class="p-3 border-b">المخزن الحالي</th>
-                            <th class="p-3 border-b">إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminProductsTable" class="text-sm">
-                        <tr><td colspan="6" class="text-center p-4 text-gray-400">جاري تحميل البيانات...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t py-4 text-center text-xs text-gray-500">
-        لوحة التحكم الخاصة - Soly Store 2026
-    </footer>
-
-    <!-- Firebase SDK Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, increment } from "
